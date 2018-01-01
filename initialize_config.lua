@@ -1,0 +1,6 @@
+net.dns.setdnsserver('8.8.8.8',0)
+net.dns.setdnsserver('8.8.4.4',1)
+math.randomseed(tmr.now()+node.chipid())
+math.random()
+math.random()
+math.random()
