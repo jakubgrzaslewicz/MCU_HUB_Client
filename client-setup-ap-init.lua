@@ -32,12 +32,12 @@ end
 return function ()
     local ap_name = getApName()
     
-    --wifi.ap.config({ssid=ap_name, pwd = 'MCU_HUB_PA$$', max = 1, auth = wifi.WPA_WPA2_PSK})
+    --wifi.ap.config({ssid=ap_name, pwd = 'MCU-HUB_PA$$', max = 1, auth = wifi.WPA_WPA2_PSK})
     wifi.sta.clearconfig()
     wifi.setmode(wifi.STATIONAP,false)
     wifi.ap.config({ssid=ap_name, max = 1, save = false})
-    wifi.ap.setip({ip = '192.168.1.1', netmask = '255.255.255.0', gateway = '192.168.1.1'});
-    print("Access point config: SSID("..ap_name.."), PASSWORD(MCU_HUB_PA$$), IP(192.168.1.1), NETMASK(255.255.255.0), GATEWAY(192.168.1.1)")
+    wifi.ap.setip({ip = '10.10.0.1', netmask = '255.255.255.0', gateway = '10.10.0.1'});
+    print("Access point config: SSID("..ap_name.."), PASSWORD(MCU-HUB_PA$$), IP(192.168.1.1), NETMASK(255.255.255.0), GATEWAY(192.168.1.1)")
     ap_name=nil
     CACHE_FILE_AP_NAME=nil
     collectgarbage()

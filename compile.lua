@@ -13,7 +13,9 @@ local serverFiles = {
    'client-init.lua',
    'client-setup-ap-init.lua',
    'client-setup-web-server.lua',
-   'client-register-wifi-events.lua'
+   'client-register-wifi-events.lua',
+   'json-api-get-ap-list.lua',
+   'client-standard-responses.lua'
 }
 for i, f in ipairs(serverFiles) do compileAndRemoveIfNeeded(f) end
 
