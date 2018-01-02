@@ -6,14 +6,14 @@ end
 
 local wifi_got_ip_event = function(T)     
   print("Wifi connection is ready! IP address is: "..T.IP)
-  syncTime()
+  --syncTime()
 end
 
 local wifi_disconnect_event = function(T)
   if T.reason == wifi.eventmon.reason.ASSOC_LEAVE then 
     return 
   end
-local total_tries = 75
+local total_tries = 15
   print("\nWiFi connection to AP("..T.SSID..") has failed!")
 
   for key,val in pairs(wifi.eventmon.reason) do
@@ -45,8 +45,8 @@ local wifi_client_disconnected_event = function(T)
 end
 
 
-wifi.eventmon.register(wifi.eventmon.STA_CONNECTED, wifi_connect_event)
-wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, wifi_got_ip_event)
-wifi.eventmon.register(wifi.eventmon.STA_DISCONNECTED, wifi_disconnect_event)
+--wifi.eventmon.register(wifi.eventmon.STA_CONNECTED, wifi_connect_event)
+--wifi.eventmon.register(wifi.eventmon.STA_GOT_IP, wifi_got_ip_event)
+--wifi.eventmon.register(wifi.eventmon.STA_DISCONNECTED, wifi_disconnect_event)
 wifi.eventmon.register(wifi.eventmon.AP_STACONNECTED, wifi_client_connected_event)
 wifi.eventmon.register(wifi.eventmon.AP_STADISCONNECTED, wifi_client_disconnected_event)
