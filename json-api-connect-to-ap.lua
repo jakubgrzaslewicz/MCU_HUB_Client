@@ -10,10 +10,11 @@ function tablelength(T)
   for _ in pairs(T) do count = count + 1 end
   return count
 end
-function generate_json_error(message)
+function generate_json_error(message,data)
     local arr = {}
     arr['SUCCESS'] = false
     arr['MESSAGE'] = message
+    arr['DATA'] = data
     return sjson.encode(arr)
 end
 function generate_json_success(message,data)
@@ -22,6 +23,14 @@ function generate_json_success(message,data)
     arr['MESSAGE'] = message
     arr['DATA'] = data
     return sjson.encode(arr)
+end
+function get_reason(status)
+    if status == wifi.STA_IDLE          then return "STATION IDLE" end
+    if status == wifi.STA_CONNECTING       then return "CONNECTION LOST" end
+    if status == wifi.STA_WRONGPWD    then return "WRONG PASSWORD" end
+    if status == wifi.STA_APNOTFOUND    then return "AP NOT FOUND" end
+    if status == wifi.STA_FAIL    then return "CONNECTION FAILED" end
+    return "UNKNOWN"
 end
 return function (client,request)
     headers = dofile('client-standard-responses.lc')(200)
@@ -50,15 +59,15 @@ return function (client,request)
     
     _,_,SSID = string.find(request,"SSID=(.*)\n")
     _,_,PASSWORD = string.find(request,"PASS=(.*)")
-    if SSID == nil or SSID == '' or PASSWORD == nil or PASSWORD == '' then
-        buff[#buff+1] = generate_json_error("SSID and PASS fields must be specified and not empty")
-        send_data()
-    else
+    if (SSID ~= nil and SSID:match("%S") ~= nil) and (PASSWORD ~= nil and PASSWORD:match("%S") ~= nil)then
+        gpio.mode(4, gpio.OUTPUT)
+        gpio.write(4, gpio.LOW)
         print('Trying to connect with access point using SSID: '..SSID..' and PASSWORD: '..PASSWORD)
         dofile('wifi-credentials-manager.lc')
         save_ssid(SSID)
+        save_pass(PASSWORD)
         conf = {}
-        conf.pwd = PASSWORD
+        conf.pwd = get_saved_pass()
         conf.save = false
         conf.bssid=nil
         conf.ssid = get_saved_ssid()
@@ -74,20 +83,24 @@ return function (client,request)
                     buff[#buff+1] = generate_json_success("Connected to AP successfully",{IP=wifi.sta.getip()})
                     tmr.stop(1)
                     send_data()
+                elseif wifi.sta.status() == wifi.STA_WRONGPWD or wifi.sta.status() == wifi.STA_APNOTFOUND  then
+                        buff[#buff+1] = generate_json_error("Connection failed.",{REASON_CODE=wifi.sta.status(), REASON = get_reason(wifi.sta.status())} )
+                        tmr.stop(1)
+                        send_data()
                 else
                     if tmr.now()-time > 8000000 then -- about 8 secs
                         print("Timeout!")
-                        buff[#buff+1] = generate_json_error("Connection failed. Reason: "..wifi.sta.status() )
+                        buff[#buff+1] = generate_json_error("Connection failed.",{REASON_CODE=wifi.sta.status(), REASON = get_reason(wifi.sta.status())} )
                         tmr.stop(1)
                         send_data()
                     end
-                    if wifi.sta.status() == wifi.STA_IDLE          then print("Station: idling") end
-                    if wifi.sta.status() == wifi.STA_CONNECTING       then print("Station: connecting") end
-                    if wifi.sta.status() == wifi.STA_WRONGPWD    then print("Station: wrong password") end
-                    if wifi.sta.status() == wifi.STA_APNOTFOUND    then print("Station: AP not found") end
-                    if wifi.sta.status() == wifi.STA_FAIL    then print("Station: connection failed") end
                 end 
+                
+                print("STATION: "..get_reason(wifi.sta.status()))
             end)
         collectgarbage()
+    else
+        buff[#buff+1] = generate_json_error("SSID and PASS fields must be specified and not empty",nil)
+        send_data()
     end
 end
