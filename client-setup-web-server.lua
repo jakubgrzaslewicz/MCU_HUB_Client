@@ -16,9 +16,9 @@ function receiver(client,request)
         if url == "connect-to-ap" then 
             print('Executing task: connect-to-ap')
             dofile('json-api-connect-to-ap.lc')(client,request)
-        elseif url == "set-ap-password" then
-            print('Executing task: set-ap-password')
-            dofile('json-api-set-ap-pass.lc')(client,request)
+        elseif url == "set-config" then
+            print('Executing task: set-config')
+            dofile('json-api-config.lc')(client,request)
         else
             client:send(dofile('client-standard-responses.lc')(404))
         end

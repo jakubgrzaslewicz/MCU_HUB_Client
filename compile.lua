@@ -19,7 +19,9 @@ local serverFiles = {
    'json-api-connect-to-ap.lua',
    'json-api-device-info.lua',
    'wifi-credentials-manager.lua',
-   'json-api-set-ap-pass.lua'
+   'json-api-set-ap-pass.lua',
+   'configuration-keys.lua',
+   'client-config-manager.lua'
 }
 for i, f in ipairs(serverFiles) do compileAndRemoveIfNeeded(f) end
 
