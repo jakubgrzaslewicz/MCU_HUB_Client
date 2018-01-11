@@ -54,6 +54,7 @@ return function (client,request)
         if string.len(PASSWORD) <8 then
             buff[#buff+1] = generate_json_error("PASS fields must be at least 8 chars long",nil)
             send_data()
+            blink('.','-','-')
             return;
         end
         print("Setting AP passwort to: "..PASSWORD)
@@ -61,9 +62,11 @@ return function (client,request)
         save_ap_pass(PASSWORD)
         buff[#buff+1] = generate_json_success("Password was set successfully",nil)
         send_data()
+        blink('.','.','.')
         collectgarbage()
     else
         buff[#buff+1] = generate_json_error("PASS fields must be specified and not empty",nil)
+        blink('.','.','-')
         send_data()
     end
 end

@@ -51,29 +51,38 @@ return function (client,request)
     CONFIG_VAL=nil
     CONFIG_KEY=nil
     dofile('configuration-keys.lc')
-    for key,value in pairs(registered_config_values) do --pseudocode
-        _,_,CONFIG_VAL = string.find(request,value.."=(.*)")
-        CONFIG_KEY = value
-        if CONFIG_VAL ~= nil then break end
-        buff[#buff+1] = generate_json_error("Unproperly prepared request. Your key may be not allowed.",nil)
-        send_data()
-        return;
-    end
-    
-    if CONFIG_KEY == 'WIFI_AP_PASS' and (CONFIG_VAL ~= nil and CONFIG_VAL:match("%S") ~= nil) then
-        if string.len(PASSWORD) <8 then
-            buff[#buff+1] = generate_json_error("PASS field must be at least 8 chars long",nil)
-            send_data()
-            return;
+    for key,value in pairs(registered_config_keys) do --pseudocode
+        _,_,CONFIG_VAL = string.find(request,"-"..value.."=(.*)")
+        if CONFIG_VAL ~= nil then 
+            CONFIG_KEY = value
+            break 
         end
-        print("Setting configuration "..CONFIG_KEY.." field to: "..CONFIG_VAL)
-        dofile('client-config-manager.lc')
-        save(CONFIG_KEY,CONFIG_VAL)
-        buff[#buff+1] = generate_json_success("Config value was set successfully",nil)
+    end
+    if CONFIG_KEY == nil then
+        buff[#buff+1] = generate_json_error("Unproperly prepared request. Your key may be not allowed.",nil)
+        blink('.','.','-')
         send_data()
-        collectgarbage()
     else
-        buff[#buff+1] = generate_json_error("Field must be specified and not empty",nil)
-        send_data()
+        if CONFIG_VAL ~= nil and CONFIG_VAL:match("%S") ~= nil then
+            if CONFIG_KEY == 'WIFI_AP_PASS' then
+                if string.len(CONFIG_VAL) <8 then
+                    buff[#buff+1] = generate_json_error("PASS field must be at least 8 chars long",nil)
+                    blink('.','-','-')
+                    send_data()
+                    return;
+                end
+            end
+            print("Setting configuration "..CONFIG_KEY.." field to: "..CONFIG_VAL)
+            dofile('client-config-manager.lc')
+            save(CONFIG_KEY,CONFIG_VAL)
+            blink('.','.','.')
+            buff[#buff+1] = generate_json_success("Config value was set successfully",nil)
+            send_data()
+            collectgarbage()
+        else
+            buff[#buff+1] = generate_json_error("Field must be specified and not empty",nil)
+            blink('.','.','-')
+            send_data()
+        end
     end
 end

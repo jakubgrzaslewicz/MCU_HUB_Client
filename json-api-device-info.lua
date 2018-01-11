@@ -26,5 +26,6 @@ return function (client,request)
     buff = nil
     json = nil
     client:on("sent",function(client) client:close() end)
+    blink('.','.','.')
     collectgarbage()
 end

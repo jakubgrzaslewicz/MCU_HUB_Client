@@ -41,6 +41,7 @@ return function (client,request)
         table.insert(buff, 1, headers)
         headers = nil
         client:on("sent", send)
+        blink('.','.','.')
         send(client)
     end
     wifi.sta.getap(1, listap)

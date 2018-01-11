@@ -23,7 +23,7 @@ function get(KEY)
 end
 function save(KEY,VALUE)
     dofile('configuration-keys.lc')
-    if has_value(arr, KEY) then
+    if has_value(registered_config_keys, KEY) then
         filename = CONFIG_FILE_PREFIX..KEY
         if file.exists(filename) then
             file.remove(filename)
@@ -34,7 +34,7 @@ function save(KEY,VALUE)
         return false
     end
 end
-local function has_value (tab, val)
+function has_value (tab, val)
     for index, value in ipairs(tab) do
         if value == val then
             return true
@@ -46,4 +46,23 @@ function write_to_file(filename,content)
     fd = file.open(filename, 'w')
     fd.write(trim_white_chars(content))
     fd:close(); fd = nil
+end
+
+function READ_FILE(filename)
+    if file.exists(filename) then
+        fd = file.open(filename,'r')
+        if fd then
+            content = trim_white_chars(fd:readline())
+            fd:close(); fd = nil
+            if content ~= '' then
+                return content
+            else
+                return nil
+            end
+        else
+            return nil
+        end
+    else
+        return nil
+    end
 end

@@ -5,7 +5,7 @@ local function getApName()
         if fd then
             ap_name = (fd:readline():gsub("^%s*(.-)%s*$", "%1"))
             fd:close(); fd = nil
-            if string.match(ap_name, "MCU_HUB_Client_") then
+            if string.match(ap_name, "MCU-HUB-Client-") then
                 return ap_name
             end
         end
@@ -14,7 +14,7 @@ local function getApName()
         file.remove(CACHE_FILE_AP_NAME)
         return getApName()
     else
-        local name = 'MCU_HUB_Client_'
+        local name = 'MCU-HUB-Client-'
         for i=1,6 do 
             rand = math.random(2)
             if rand == 1 then

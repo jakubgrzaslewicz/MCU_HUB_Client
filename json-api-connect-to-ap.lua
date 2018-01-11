@@ -57,11 +57,9 @@ return function (client,request)
         send(client)
     end
     
-    _,_,SSID = string.find(request,"SSID=(.*)\n")
-    _,_,PASSWORD = string.find(request,"PASS=(.*)")
+    _,_,SSID = string.find(request,"-SSID=(.*)\n")
+    _,_,PASSWORD = string.find(request,"-PASS=(.*)")
     if (SSID ~= nil and SSID:match("%S") ~= nil) and (PASSWORD ~= nil and PASSWORD:match("%S") ~= nil)then
-        gpio.mode(4, gpio.OUTPUT)
-        gpio.write(4, gpio.LOW)
         print('Trying to connect with access point using SSID: '..SSID..' and PASSWORD: '..PASSWORD)
         dofile('client-config-manager.lc')
         save('WIFI_SSID',SSID)
@@ -72,10 +70,9 @@ return function (client,request)
         conf.bssid=nil
         conf.ssid = get('WIFI_SSID')
         wifi.sta.config(conf)
+        wifi.sta.sethostname(READ_FILE("cache/AP_NAME"))
         wifi.sta.connect()
         time = tmr.now()
-        config = wifi.sta.getconfig(true)
-        print(sjson.encode(config))
         tmr.alarm(1, 1000, 1, 
             function() 
                 if wifi.sta.status() == wifi.STA_GOTIP then 
@@ -83,24 +80,26 @@ return function (client,request)
                     buff[#buff+1] = generate_json_success("Connected to AP successfully",{IP=wifi.sta.getip()})
                     tmr.stop(1)
                     send_data()
+                    blink('.','.','.')
                 elseif wifi.sta.status() == wifi.STA_WRONGPWD or wifi.sta.status() == wifi.STA_APNOTFOUND  then
                         buff[#buff+1] = generate_json_error("Connection failed.",{REASON_CODE=wifi.sta.status(), REASON = get_reason(wifi.sta.status())} )
                         tmr.stop(1)
                         send_data()
+                        blink('.','-','.')
                 else
                     if tmr.now()-time > 8000000 then -- about 8 secs
                         print("Timeout!")
                         buff[#buff+1] = generate_json_error("Connection failed.",{REASON_CODE=wifi.sta.status(), REASON = get_reason(wifi.sta.status())} )
                         tmr.stop(1)
                         send_data()
+                        blink('.','-','.')
                     end
                 end 
-                
-                print("STATION: "..get_reason(wifi.sta.status()))
             end)
         collectgarbage()
     else
         buff[#buff+1] = generate_json_error("SSID and PASS fields must be specified and not empty",nil)
+        blink('.','.','-')
         send_data()
     end
 end

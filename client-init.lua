@@ -1,4 +1,5 @@
 dofile('initialize_config.lc')
+dofile('led-blink.lc')
 
 
 if file.exists('cache/SETUP_FINISHED') then 
