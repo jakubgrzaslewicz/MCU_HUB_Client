@@ -21,7 +21,8 @@ local serverFiles = {
    'wifi-credentials-manager.lua',
    'json-api-set-ap-pass.lua',
    'configuration-keys.lua',
-   'client-config-manager.lua'
+   'client-config-manager.lua',
+   'json-api-config.lua'
 }
 for i, f in ipairs(serverFiles) do compileAndRemoveIfNeeded(f) end
 
