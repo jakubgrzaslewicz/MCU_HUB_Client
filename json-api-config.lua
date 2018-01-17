@@ -1,15 +1,3 @@
-function total_size_of_array_entries(arr)
-    local content_size = 0
-    for index, line in pairs(arr) do
-        content_size = content_size + string.len(line)
-    end
-    return content_size
-end
-function tablelength(T)
-  local count = 0
-  for _ in pairs(T) do count = count + 1 end
-  return count
-end
 function generate_json_error(message,data)
     local arr = {}
     arr['SUCCESS'] = false
@@ -53,7 +41,8 @@ return function (client,request)
     dofile('configuration-keys.lc')
     for key,value in pairs(registered_config_keys) do --pseudocode
         _,_,CONFIG_VAL = string.find(request,"-"..value.."=(.*)")
-        if CONFIG_VAL ~= nil then 
+        if CONFIG_VAL ~= nil then
+            CONFIG_VAL = trim(CONFIG_VAL)
             CONFIG_KEY = value
             break 
         end

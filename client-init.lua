@@ -1,6 +1,6 @@
 dofile('initialize_config.lc')
 dofile('led-blink.lc')
-
+dofile('basic-functions.lc')
 
 if file.exists('cache/SETUP_FINISHED') then 
 print('load main features')

@@ -1,15 +1,3 @@
-function total_size_of_array_entries(arr)
-    local content_size = 0
-    for index, line in pairs(arr) do
-        content_size = content_size + string.len(line)
-    end
-    return content_size
-end
-function tablelength(T)
-  local count = 0
-  for _ in pairs(T) do count = count + 1 end
-  return count
-end
 function generate_json_error(message,data)
     local arr = {}
     arr['SUCCESS'] = false
@@ -70,7 +58,7 @@ return function (client,request)
         conf.bssid=nil
         conf.ssid = get('WIFI_SSID')
         wifi.sta.config(conf)
-        wifi.sta.sethostname(READ_FILE("cache/AP_NAME"))
+        wifi.sta.sethostname(FileReadFirstLine("cache/AP_NAME"))
         wifi.sta.connect()
         time = tmr.now()
         tmr.alarm(1, 1000, 1, 

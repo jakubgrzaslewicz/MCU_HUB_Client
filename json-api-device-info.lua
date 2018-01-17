@@ -14,10 +14,9 @@ return function (client,request)
     arr['DEVICE']['FLASH_SPEED'] = flashspeed
     arr['MCU_HUB_CLIENT']['JSON-API-VER'] = '1.0'
     fd = file.open('cache/AP_NAME','r')
-    if fd then
-        ap_name = (fd:readline():gsub("^%s*(.-)%s*$", "%1"))
+    if file.exists('cache/AP_NAME') then
+        ap_name = trim(FileReadFirstLine('cache/AP_NAME'))
         arr['MCU_HUB_CLIENT']['AP_SSID'] = ap_name
-        fd:close(); fd = nil
     end
     json = sjson.encode(arr)
     buff = buff..'Content-Length:'..string.len(json)..'\r\n\r\n'

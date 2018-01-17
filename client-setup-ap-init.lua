@@ -1,13 +1,10 @@
 local CACHE_FILE_AP_NAME = 'cache/AP_NAME'
+
 local function getApName()
     if file.exists(CACHE_FILE_AP_NAME) then
-        fd = file.open(CACHE_FILE_AP_NAME,'r')
-        if fd then
-            ap_name = (fd:readline():gsub("^%s*(.-)%s*$", "%1"))
-            fd:close(); fd = nil
-            if string.match(ap_name, "MCU-HUB-Client-") then
-                return ap_name
-            end
+        ap_name = trim(FileReadFirstLine(CACHE_FILE_AP_NAME))
+        if stringStartsWith(ap_name, "MCU-HUB-Client-") then
+            return ap_name
         end
         --If we get here, the file is corrupted.
         --Let's remove it and create new one by calling this function again
@@ -23,9 +20,7 @@ local function getApName()
                 name = name .. string.char(math.random(65,90))
             end
         end
-        fd = file.open(CACHE_FILE_AP_NAME, 'w')
-        fd.write(name)
-        fd:close(); fd = nil
+        FileWrite(CACHE_FILE_AP_NAME,name)
         return name
     end
 end

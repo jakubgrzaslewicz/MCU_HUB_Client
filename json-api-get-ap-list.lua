@@ -1,10 +1,3 @@
-function total_size_of_array_entries(arr)
-    local content_size = 0
-    for index, line in pairs(arr) do
-        content_size = content_size + string.len(line)
-    end
-    return content_size
-end
 return function (client,request)
     buff = {}
     headers = dofile('client-standard-responses.lc')(200)
@@ -21,7 +14,7 @@ return function (client,request)
             buff = nil
         end
     end
-    function listap(t)
+    local function listap(t)
         local json = {}
         for bssid,v in pairs(t) do
             local ssid, rssi, authmode, channel = string.match(v, "([^,]+),([^,]+),([^,]+),([^,]*)")
